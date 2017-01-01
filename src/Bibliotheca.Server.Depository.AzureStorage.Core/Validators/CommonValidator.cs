@@ -6,11 +6,11 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Validators
 {
     public class CommonValidator : ICommonValidator
     {
-        private readonly IFileSystemService _fileSystemService;
+        private readonly IAzureStorageService _azureStorageService;
 
-        public CommonValidator(IFileSystemService fileSystemService)
+        public CommonValidator(IAzureStorageService azureStorageService)
         {
-            _fileSystemService = fileSystemService;
+            _azureStorageService = azureStorageService;
         }
 
         public void ProjectIdShouldBeSpecified(string projectId)
@@ -41,7 +41,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Validators
         {
             BranchNameShouldBeSpecified(branchName);
 
-            var branchesNames = await _fileSystemService.GetBranchesNamesAsync(projectId);
+            var branchesNames = await _azureStorageService.GetBranchesNamesAsync(projectId);
             if (!branchesNames.Contains(branchName))
             {
                 throw new BranchNotFoundException($"Branch '{branchName}' in project '{projectId}' not found.");
@@ -52,7 +52,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Validators
         {
             ProjectIdShouldBeSpecified(projectId);
 
-            var projectIds = await _fileSystemService.GetProjectsIdsAsync();
+            var projectIds = await _azureStorageService.GetProjectsIdsAsync();
             if (!projectIds.Contains(projectId))
             {
                 throw new ProjectNotFoundException($"Project '{projectId}' not found.");
@@ -63,7 +63,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Validators
         {
             DocumentUriShouldBeSpecified(fileUri);
 
-            bool fileExists = await _fileSystemService.IsFileExistsAsync(projectId, branchName, fileUri);
+            bool fileExists = await _azureStorageService.IsFileExistsAsync(projectId, branchName, fileUri);
             if (!fileExists)
             {
                 throw new DocumentNotFoundException($"Document '{fileUri}' not exists in branch '{branchName}' in project '{projectId}'.");
@@ -72,7 +72,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Validators
 
         public async Task DocumentShouldNotExists(string projectId, string branchName, string fileUri)
         {
-            bool fileExists = await _fileSystemService.IsFileExistsAsync(projectId, branchName, fileUri);
+            bool fileExists = await _azureStorageService.IsFileExistsAsync(projectId, branchName, fileUri);
             if (fileExists)
             {
                 throw new DocumentAlreadyExistsException($"Document '{fileUri}' already exists in branch '{branchName}' in project '{projectId}'.");
@@ -81,7 +81,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Validators
 
         public async Task BranchShouldNotExists(string projectId, string branchName)
         {
-            var branchesNames = await _fileSystemService.GetBranchesNamesAsync(projectId);
+            var branchesNames = await _azureStorageService.GetBranchesNamesAsync(projectId);
             if (branchesNames.Contains(branchName))
             {
                 throw new BranchAlreadyExistsException($"Branch '{branchName}' in project '{projectId}' already exists.");
@@ -90,7 +90,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Validators
 
         public async Task ProjectShouldNotExists(string projectId)
         {
-            var projectIds = await _fileSystemService.GetProjectsIdsAsync();
+            var projectIds = await _azureStorageService.GetProjectsIdsAsync();
             if (projectIds.Contains(projectId))
             {
                 throw new ProjectAlreadyExistsException($"Project with id '{projectId}' already exists.");

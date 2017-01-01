@@ -9,12 +9,12 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 {
     public class DocumentsService : IDocumentsService
     {
-        private readonly IFileSystemService _fileSystemService;
+        private readonly IAzureStorageService _azureStorageService;
         private readonly ICommonValidator _commonValidator;
 
-        public DocumentsService(IFileSystemService fileSystemService, ICommonValidator commonValidator)
+        public DocumentsService(IAzureStorageService azureStorageService, ICommonValidator commonValidator)
         {
-            _fileSystemService = fileSystemService;
+            _azureStorageService = azureStorageService;
             _commonValidator = commonValidator;
         }
 
@@ -27,7 +27,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
             byte[] content;
             try
             {
-                content = await _fileSystemService.ReadBinaryAsync(projectId, branchName, fileUri);
+                content = await _azureStorageService.ReadBinaryAsync(projectId, branchName, fileUri);
             }
             catch (FileNotFoundException)
             {
@@ -56,7 +56,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
             _commonValidator.DocumentUriShouldBeSpecified(document.Uri);
             await _commonValidator.DocumentShouldNotExists(projectId, branchName, document.Uri);
 
-            await _fileSystemService.WriteBinaryAsync(projectId, branchName, document.Uri, document.Content);
+            await _azureStorageService.WriteBinaryAsync(projectId, branchName, document.Uri, document.Content);
         }
 
         public async Task UpdateDocumentAsync(string projectId, string branchName, string fileUri, DocumentDto document)
@@ -65,7 +65,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
             await _commonValidator.BranchHaveToExists(projectId, branchName);
             await _commonValidator.DocumentHaveToExists(projectId, branchName, fileUri);
 
-            await _fileSystemService.WriteBinaryAsync(projectId, branchName, fileUri, document.Content);
+            await _azureStorageService.WriteBinaryAsync(projectId, branchName, fileUri, document.Content);
         }
 
         public async Task DeleteDocumentAsync(string projectId, string branchName, string fileUri)
@@ -74,7 +74,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
             await _commonValidator.BranchHaveToExists(projectId, branchName);
             await _commonValidator.DocumentHaveToExists(projectId, branchName, fileUri);
 
-            await _fileSystemService.DeleteFileAsync(projectId, branchName, fileUri);
+            await _azureStorageService.DeleteFileAsync(projectId, branchName, fileUri);
         }
     }
 }

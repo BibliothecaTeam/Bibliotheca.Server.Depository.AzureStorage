@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 {
-    public interface IFileSystemService
+    public interface IAzureStorageService
     {
         Task<IList<string>> GetProjectsIdsAsync();
 
@@ -13,17 +13,11 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 
         Task DeleteFileAsync(string projectId, string branchName, string fileUri);
 
-        Task<IList<string>> GetFoldersAsync(string projectId);
-
         Task<IList<string>> GetFoldersAsync(string projectId, string branchName);
 
         Task<IList<string>> GetFoldersAsync(string projectId, string branchName, string path);
 
         Task CreateFolderAsync(string projectId);
-
-        Task CreateFolderAsync(string projectId, string branchName);
-
-        Task CreateFolderAsync(string projectId, string branchName, string path);
 
         Task DeleteFolderAsync(string projectId);
 

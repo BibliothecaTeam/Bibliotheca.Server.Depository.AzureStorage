@@ -13,13 +13,13 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 {
     public class BranchesService : IBranchesService
     {
-        private readonly IFileSystemService _fileSystemService;
+        private readonly IAzureStorageService _azureStorageService;
         private readonly ICommonValidator _commonValidator;
         private readonly ILogger _logger;
 
-        public BranchesService(IFileSystemService fileSystemService, ICommonValidator commonValidator, ILoggerFactory loggerFactory)
+        public BranchesService(IAzureStorageService azureStorageService, ICommonValidator commonValidator, ILoggerFactory loggerFactory)
         {
-            _fileSystemService = fileSystemService;
+            _azureStorageService = azureStorageService;
             _commonValidator = commonValidator;
             _logger = loggerFactory.CreateLogger<BranchesService>();
         }
@@ -28,14 +28,14 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
         {
             await _commonValidator.ProjectHaveToExists(projectId);
 
-            var branchesNames = await _fileSystemService.GetBranchesNamesAsync(projectId);
+            var branchesNames = await _azureStorageService.GetBranchesNamesAsync(projectId);
             var branches = new List<BranchDto>();
 
             foreach (var branchName in branchesNames)
             {
                 try
                 {
-                    string mkDocsYaml = await _fileSystemService.ReadTextAsync(projectId, branchName, "mkdocs.yml");
+                    string mkDocsYaml = await _azureStorageService.ReadTextAsync(projectId, branchName, "mkdocs.yml");
 
                     var branch = new BranchDto
                     {
@@ -62,7 +62,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 
             try
             {
-                string mkDocsYaml = await _fileSystemService.ReadTextAsync(projectId, branchName, "mkdocs.yml");
+                string mkDocsYaml = await _azureStorageService.ReadTextAsync(projectId, branchName, "mkdocs.yml");
                 var branch = new BranchDto
                 {
                     Name = branchName,
@@ -90,8 +90,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
                 throw new MkDocsFileIsIncorrectException($"MkDocs file is empty or has incorrect format.");
             }
 
-            await _fileSystemService.CreateFolderAsync(projectId, branch.Name);
-            await _fileSystemService.WriteTextAsync(projectId, branch.Name, "mkdocs.yml", branch.MkDocsYaml);
+            await _azureStorageService.WriteTextAsync(projectId, branch.Name, "mkdocs.yml", branch.MkDocsYaml);
         }
 
         public async Task UpdateBranchAsync(string projectId, string branchName, BranchDto branch)
@@ -104,7 +103,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
                 throw new MkDocsFileIsIncorrectException($"MkDocs file is empty or has incorrect format.");
             }
 
-            await _fileSystemService.WriteTextAsync(projectId, branchName, "mkdocs.yml", branch.MkDocsYaml);
+            await _azureStorageService.WriteTextAsync(projectId, branchName, "mkdocs.yml", branch.MkDocsYaml);
         }
 
         public async Task DeleteBranchAsync(string projectId, string branchName)
@@ -112,7 +111,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
             await _commonValidator.ProjectHaveToExists(projectId);
             await _commonValidator.BranchHaveToExists(projectId, branchName);
 
-            await _fileSystemService.DeleteFolderAsync(projectId, branchName);
+            await _azureStorageService.DeleteFolderAsync(projectId, branchName);
         }
 
         private bool IsYamlFileCorrect(string mkdocsFile)

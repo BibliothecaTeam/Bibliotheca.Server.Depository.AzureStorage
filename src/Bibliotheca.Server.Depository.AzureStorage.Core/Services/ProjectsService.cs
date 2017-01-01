@@ -12,20 +12,20 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 {
     public class ProjectsService : IProjectsService
     {
-        private readonly IFileSystemService _fileSystemService;
+        private readonly IAzureStorageService _azureStorageService;
         private readonly ICommonValidator _commonValidator;
         private readonly ILogger _logger;
 
-        public ProjectsService(IFileSystemService fileSystemService, ICommonValidator commonValidator, ILoggerFactory loggerFactory)
+        public ProjectsService(IAzureStorageService azureStorageService, ICommonValidator commonValidator, ILoggerFactory loggerFactory)
         {
-            _fileSystemService = fileSystemService;
+            _azureStorageService = azureStorageService;
             _commonValidator = commonValidator;
             _logger = loggerFactory.CreateLogger<ProjectsService>();
         }
 
         public async Task<IList<ProjectDto>> GetProjectsAsync()
         {
-            var projectIds = await _fileSystemService.GetProjectsIdsAsync();
+            var projectIds = await _azureStorageService.GetProjectsIdsAsync();
             projectIds = projectIds.OrderBy(x => x).ToList();
 
             var projectDtos = new List<ProjectDto>();
@@ -33,7 +33,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
             {
                 try
                 {
-                    var configurationFile = await _fileSystemService.ReadTextAsync(projectId, "configuration.json");
+                    var configurationFile = await _azureStorageService.ReadTextAsync(projectId, "configuration.json");
                     var projectDto = JsonConvert.DeserializeObject<ProjectDto>(configurationFile);
 
                     projectDto.Id = projectId;
@@ -54,7 +54,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 
             try
             {
-                var configurationFile = await _fileSystemService.ReadTextAsync(projectId, "configuration.json");
+                var configurationFile = await _azureStorageService.ReadTextAsync(projectId, "configuration.json");
                 var projectDto = JsonConvert.DeserializeObject<ProjectDto>(configurationFile);
 
                 projectDto.Id = projectId;
@@ -72,10 +72,10 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
             _commonValidator.ProjectIdShouldBeSpecified(project.Id);
             await _commonValidator.ProjectShouldNotExists(project.Id);
 
-            await _fileSystemService.CreateFolderAsync(project.Id);
+            await _azureStorageService.CreateFolderAsync(project.Id);
 
             var serializedProject = JsonConvert.SerializeObject(project);
-            await _fileSystemService.WriteTextAsync(project.Id, "configuration.json", serializedProject);
+            await _azureStorageService.WriteTextAsync(project.Id, "configuration.json", serializedProject);
         }
 
         public async Task UpdateProjectAsync(string projectId, ProjectDto project)
@@ -84,13 +84,13 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 
             project.Id = projectId;
             var serializedProject = JsonConvert.SerializeObject(project);
-            await _fileSystemService.WriteTextAsync(projectId, "configuration.json", serializedProject);
+            await _azureStorageService.WriteTextAsync(projectId, "configuration.json", serializedProject);
         }
 
         public async Task DeleteProjectAsync(string projectId)
         {
             await _commonValidator.ProjectHaveToExists(projectId);
-            await _fileSystemService.DeleteFolderAsync(projectId);
+            await _azureStorageService.DeleteFolderAsync(projectId);
         }
     }
 }

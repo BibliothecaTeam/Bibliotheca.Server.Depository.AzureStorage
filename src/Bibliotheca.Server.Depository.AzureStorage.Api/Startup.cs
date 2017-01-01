@@ -74,7 +74,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
                 });
             });
 
-            services.AddScoped<IFileSystemService, FileSystemService>();
+            services.AddScoped<IAzureStorageService, AzureStorageService>();
             services.AddScoped<ICommonValidator, CommonValidator>();;
             services.AddScoped<IProjectsService, ProjectsService>();
             services.AddScoped<IBranchesService, BranchesService>();
