@@ -1,8 +1,10 @@
+using System;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Parameters;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Services;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Validators;
 using Bibliotheca.Server.Mvc.Middleware.Authorization;
 using Bibliotheca.Server.Mvc.Middleware.Diagnostics.Exceptions;
+using Bibliotheca.Server.ServiceDiscovery.ServiceClient;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -19,6 +21,8 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
     public class Startup
     {
         public IConfigurationRoot Configuration { get; }
+
+        protected bool UseServiceDiscovery { get; set; } = true;
 
         public Startup(IHostingEnvironment env)
         {
@@ -75,7 +79,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
             });
 
             services.AddScoped<IAzureStorageService, AzureStorageService>();
-            services.AddScoped<ICommonValidator, CommonValidator>();;
+            services.AddScoped<ICommonValidator, CommonValidator>(); ;
             services.AddScoped<IProjectsService, ProjectsService>();
             services.AddScoped<IBranchesService, BranchesService>();
             services.AddScoped<IDocumentsService, DocumentsService>();
@@ -83,6 +87,11 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            if (UseServiceDiscovery)
+            {
+                RegisterClient();
+            }
+
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
@@ -111,6 +120,33 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
 
             app.UseSwagger();
             app.UseSwaggerUi();
+        }
+
+        private void RegisterClient()
+        {
+            var serviceDiscoveryConfiguration = Configuration.GetSection("ServiceDiscovery");
+            var clientOptions = new ClientOptions
+            {
+                ServiceId = serviceDiscoveryConfiguration["ServiceId"],
+                ServiceName = serviceDiscoveryConfiguration["ServiceName"],
+                AgentAddress = serviceDiscoveryConfiguration["AgentAddress"],
+                Datacenter = serviceDiscoveryConfiguration["Datacenter"],
+                ClientPort = GetPort()
+            };
+            var serviceDiscovery = new ServiceDiscoveryClient();
+            serviceDiscovery.Register(clientOptions);
+        }
+
+        private int GetPort()
+        {
+            var address = Configuration["server.urls"];
+            if (!string.IsNullOrWhiteSpace(address))
+            {
+                var url = new Uri(address);
+                return url.Port;
+            }
+
+            return 5000;
         }
     }
 }
