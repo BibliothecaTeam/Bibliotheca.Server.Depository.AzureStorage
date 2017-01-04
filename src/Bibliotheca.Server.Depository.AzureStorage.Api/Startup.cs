@@ -6,6 +6,7 @@ using Bibliotheca.Server.Depository.AzureStorage.Core.Validators;
 using Bibliotheca.Server.Mvc.Middleware.Authorization;
 using Bibliotheca.Server.Mvc.Middleware.Diagnostics.Exceptions;
 using Bibliotheca.Server.ServiceDiscovery.ServiceClient;
+using Bibliotheca.Server.ServiceDiscovery.ServiceClient.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -79,6 +80,8 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
                 });
             });
 
+            services.AddServiceDiscovery();
+
             services.AddScoped<IAzureStorageService, AzureStorageService>();
             services.AddScoped<ICommonValidator, CommonValidator>(); ;
             services.AddScoped<IProjectsService, ProjectsService>();
@@ -90,7 +93,8 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
         {
             if (UseServiceDiscovery)
             {
-                RegisterClient();
+                var options = GetServiceDiscoveryOptions();
+                app.RegisterService(options);
             }
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
@@ -123,7 +127,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
             app.UseSwaggerUi();
         }
 
-        private void RegisterClient()
+        private ServiceDiscoveryOptions GetServiceDiscoveryOptions()
         {
             var serviceDiscoveryConfiguration = Configuration.GetSection("ServiceDiscovery");
 
@@ -131,17 +135,16 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
             var tagsSection = serviceDiscoveryConfiguration.GetSection("ServiceTags");
             tagsSection.Bind(tags);
 
-            var serviceDiscovery = new ServiceDiscoveryClient();
-            serviceDiscovery.Register((options) =>
-            {
-                options.ServiceOptions.Id = serviceDiscoveryConfiguration["ServiceId"];
-                options.ServiceOptions.Name = serviceDiscoveryConfiguration["ServiceName"];
-                options.ServiceOptions.Address = serviceDiscoveryConfiguration["ServiceAddress"];
-                options.ServiceOptions.Port = Convert.ToInt32(serviceDiscoveryConfiguration["ServicePort"]);
-                options.ServiceOptions.HttpHealthCheck = serviceDiscoveryConfiguration["ServiceHttpHealthCheck"];
-                options.ServiceOptions.Tags = tags;
-                options.ServerOptions.Address = serviceDiscoveryConfiguration["ServerAddress"];
-            });
+            var options = new ServiceDiscoveryOptions();
+            options.ServiceOptions.Id = serviceDiscoveryConfiguration["ServiceId"];
+            options.ServiceOptions.Name = serviceDiscoveryConfiguration["ServiceName"];
+            options.ServiceOptions.Address = serviceDiscoveryConfiguration["ServiceAddress"];
+            options.ServiceOptions.Port = Convert.ToInt32(serviceDiscoveryConfiguration["ServicePort"]);
+            options.ServiceOptions.HttpHealthCheck = serviceDiscoveryConfiguration["ServiceHttpHealthCheck"];
+            options.ServiceOptions.Tags = tags;
+            options.ServerOptions.Address = serviceDiscoveryConfiguration["ServerAddress"];
+
+            return options;
         }
     }
 }
