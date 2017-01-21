@@ -55,7 +55,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api.Controllers
 
         private string DecodeUrl(string url)
         {
-            return url.Replace("+", "/");
+            return url.Replace(":", "/");
         }
     }
 }
