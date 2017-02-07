@@ -31,7 +31,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
             }
             catch (FileNotFoundException)
             {
-                throw new DocumentNotFoundException($"aaaa Document '{fileUri}' not exists in branch '{branchName}' in project '{projectId}'.");
+                throw new DocumentNotFoundException($"Document '{fileUri}' not exists in branch '{branchName}' in project '{projectId}'.");
             }
 
             var extension = Path.GetExtension(fileUri);
