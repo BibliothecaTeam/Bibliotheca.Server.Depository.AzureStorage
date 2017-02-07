@@ -117,7 +117,8 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
                 Authority = Configuration["OAuthAuthority"],
                 Audience = Configuration["OAuthAudience"],
                 AutomaticAuthenticate = true,
-                AutomaticChallenge = true
+                AutomaticChallenge = true,
+                RequireHttpsMetadata = !env.IsDevelopment()
             };
             app.UseBearerAuthentication(jwtBearerOptions);
 
