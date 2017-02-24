@@ -97,8 +97,15 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
                 app.RegisterService(options);
             }
 
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
+            if(env.IsDevelopment())
+            {
+                loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+                loggerFactory.AddDebug();
+            }
+            else
+            {
+                loggerFactory.AddAzureWebAppDiagnostics();
+            }
 
             app.UseExceptionHandler();
 
