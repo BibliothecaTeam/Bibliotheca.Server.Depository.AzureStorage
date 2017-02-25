@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Parameters;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Services;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Validators;
+using Bibliotheca.Server.Depository.AzureStorage.Jobs;
 using Bibliotheca.Server.Mvc.Middleware.Authorization;
 using Bibliotheca.Server.Mvc.Middleware.Diagnostics.Exceptions;
-using Bibliotheca.Server.ServiceDiscovery.ServiceClient;
 using Bibliotheca.Server.ServiceDiscovery.ServiceClient.Extensions;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -17,7 +16,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
-using FluentScheduler;
 
 namespace Bibliotheca.Server.Depository.AzureStorage.Api
 {
@@ -40,6 +38,11 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<ApplicationParameters>(Configuration);
+
+            if (UseServiceDiscovery)
+            {
+                services.AddHangfire(x => x.UseStorage(new Hangfire.MemoryStorage.MemoryStorage()));
+            }
 
             services.AddCors(options =>
             {
@@ -83,6 +86,8 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
 
             services.AddServiceDiscovery();
 
+            services.AddScoped<IServiceDiscoveryRegistrationJob, ServiceDiscoveryRegistrationJob>();
+
             services.AddScoped<IAzureStorageService, AzureStorageService>();
             services.AddScoped<ICommonValidator, CommonValidator>(); ;
             services.AddScoped<IProjectsService, ProjectsService>();
@@ -90,7 +95,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
             services.AddScoped<IDocumentsService, DocumentsService>();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceDiscoveryClient serviceDiscoveryClient)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             if(env.IsDevelopment())
             {
@@ -104,11 +109,8 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
 
             if (UseServiceDiscovery)
             {
-                var options = GetServiceDiscoveryOptions();
-                JobManager.AddJob(
-                    () => { serviceDiscoveryClient.Register(options); }, 
-                    s => s.ToRunNow().AndEvery(1).Minutes()
-                );
+                app.UseHangfireServer();
+                RecurringJob.AddOrUpdate<IServiceDiscoveryRegistrationJob>("register-service", x => x.RegisterServiceAsync(null), Cron.Minutely);
             }
 
             app.UseExceptionHandler();
@@ -137,26 +139,6 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
 
             app.UseSwagger();
             app.UseSwaggerUi();
-        }
-
-        private ServiceDiscoveryOptions GetServiceDiscoveryOptions()
-        {
-            var serviceDiscoveryConfiguration = Configuration.GetSection("ServiceDiscovery");
-
-            var tags = new List<string>();
-            var tagsSection = serviceDiscoveryConfiguration.GetSection("ServiceTags");
-            tagsSection.Bind(tags);
-
-            var options = new ServiceDiscoveryOptions();
-            options.ServiceOptions.Id = serviceDiscoveryConfiguration["ServiceId"];
-            options.ServiceOptions.Name = serviceDiscoveryConfiguration["ServiceName"];
-            options.ServiceOptions.Address = serviceDiscoveryConfiguration["ServiceAddress"];
-            options.ServiceOptions.Port = Convert.ToInt32(serviceDiscoveryConfiguration["ServicePort"]);
-            options.ServiceOptions.HttpHealthCheck = serviceDiscoveryConfiguration["ServiceHttpHealthCheck"];
-            options.ServiceOptions.Tags = tags;
-            options.ServerOptions.Address = serviceDiscoveryConfiguration["ServerAddress"];
-
-            return options;
         }
     }
 }

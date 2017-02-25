@@ -9,5 +9,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Parameters
         public string OAuthAudience { get; set; }
 
         public string AzureStorageConnectionString { get; set; }
+
+        public ServiceDiscovery ServiceDiscovery { get; set; }
     }
 }

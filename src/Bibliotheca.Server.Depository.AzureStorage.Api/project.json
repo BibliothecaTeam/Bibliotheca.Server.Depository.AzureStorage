@@ -22,10 +22,11 @@
     "Microsoft.AspNetCore.Mvc.Versioning": "1.0.3",
     "Swashbuckle.SwaggerUi": "6.0.0-beta902",
     "Swashbuckle.SwaggerGen": "6.0.0-beta902",
-    "FluentScheduler": "5.1.3",
+    "Hangfire.AspNetCore": "1.6.8",
+    "Hangfire.MemoryStorage.Core": "1.4.0",
     "Bibliotheca.Server.Mvc.Middleware.Authorization": "1.0.2",
     "Bibliotheca.Server.Mvc.Middleware.Diagnostics": "1.0.3",
-    "Bibliotheca.Server.ServiceDiscovery.ServiceClient": "1.0.11",
+    "Bibliotheca.Server.ServiceDiscovery.ServiceClient": "1.0.12",
     "Bibliotheca.Server.Depository.Abstractions": "1.0.6",
     "Bibliotheca.Server.Depository.AzureStorage.Core": "1.0.0"
   },
