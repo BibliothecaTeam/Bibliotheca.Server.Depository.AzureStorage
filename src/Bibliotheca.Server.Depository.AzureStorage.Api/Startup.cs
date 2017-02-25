@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
+using FluentScheduler;
 
 namespace Bibliotheca.Server.Depository.AzureStorage.Api
 {
@@ -89,7 +90,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
             services.AddScoped<IDocumentsService, DocumentsService>();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceDiscoveryClient serviceDiscoveryClient)
         {
             if(env.IsDevelopment())
             {
@@ -104,7 +105,10 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
             if (UseServiceDiscovery)
             {
                 var options = GetServiceDiscoveryOptions();
-                app.RegisterService(options);
+                JobManager.AddJob(
+                    () => { serviceDiscoveryClient.Register(options); }, 
+                    s => s.ToRunNow().AndEvery(1).Minutes()
+                );
             }
 
             app.UseExceptionHandler();
