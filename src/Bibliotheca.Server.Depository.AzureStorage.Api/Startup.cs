@@ -91,12 +91,6 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            if (UseServiceDiscovery)
-            {
-                var options = GetServiceDiscoveryOptions();
-                app.RegisterService(options);
-            }
-
             if(env.IsDevelopment())
             {
                 loggerFactory.AddConsole(Configuration.GetSection("Logging"));
@@ -105,6 +99,12 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
             else
             {
                 loggerFactory.AddAzureWebAppDiagnostics();
+            }
+
+            if (UseServiceDiscovery)
+            {
+                var options = GetServiceDiscoveryOptions();
+                app.RegisterService(options);
             }
 
             app.UseExceptionHandler();
