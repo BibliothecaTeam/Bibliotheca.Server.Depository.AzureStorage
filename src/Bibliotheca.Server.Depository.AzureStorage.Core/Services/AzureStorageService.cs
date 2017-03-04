@@ -71,6 +71,32 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
             await blockBlob.DeleteIfExistsAsync();
         }
 
+        public async Task<IList<string>> GetFilesAsync(string projectId, string branchName)
+        {
+            CloudBlobContainer container = GetContainerReference(projectId);
+            BlobContinuationToken continuationToken = null;
+            BlobResultSegment resultSegment = null;
+
+            List<string> blobs = new List<string>();
+            int prefixLength = $"/{projectId}/{branchName}/".Length;
+
+            do
+            {
+                resultSegment = await container.ListBlobsSegmentedAsync(branchName, true, BlobListingDetails.Metadata, 10, continuationToken, null, null);
+                foreach (var blobItem in resultSegment.Results)
+                {
+                    var fileUri = blobItem.StorageUri.PrimaryUri.LocalPath;
+                    fileUri = fileUri.Substring(prefixLength, fileUri.Length - prefixLength);
+                    blobs.Add(fileUri);
+                }
+
+                continuationToken = resultSegment.ContinuationToken;
+            }
+            while (continuationToken != null);
+
+            return blobs.ToArray();
+        }
+
         public async Task<IList<string>> GetFoldersAsync(string projectId, string branchName)
         {
             return await GetFoldersAsync(projectId, branchName, string.Empty);
@@ -79,7 +105,6 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
         public async Task<IList<string>> GetFoldersAsync(string projectId, string branchName, string path)
         {
             CloudBlobContainer container = GetContainerReference(projectId);
-
             BlobContinuationToken continuationToken = null;
             BlobResultSegment resultSegment = null;
 

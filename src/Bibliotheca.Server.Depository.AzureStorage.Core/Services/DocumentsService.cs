@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Bibliotheca.Server.Depository.Abstractions.DataTransferObjects;
@@ -16,6 +17,31 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
         {
             _azureStorageService = azureStorageService;
             _commonValidator = commonValidator;
+        }
+
+        public async Task<IList<BaseDocumentDto>> GetDocumentsAsync(string projectId, string branchName)
+        {
+            await _commonValidator.ProjectHaveToExists(projectId);
+            await _commonValidator.BranchHaveToExists(projectId, branchName);
+
+            var baseDocuments = new List<BaseDocumentDto>();
+            var files = await _azureStorageService.GetFilesAsync(projectId, branchName);
+            foreach(var file in files)
+            {
+                var extension = Path.GetExtension(file);
+                var mimeType = MimeTypeMap.GetMimeType(extension);
+
+                var baseDocument = new BaseDocumentDto
+                {
+                    Uri = file,
+                    Name = Path.GetFileName(file),
+                    ConentType = mimeType
+                };
+
+                baseDocuments.Add(baseDocument);
+            }
+
+            return baseDocuments;
         }
 
         public async Task<DocumentDto> GetDocumentAsync(string projectId, string branchName, string fileUri)
