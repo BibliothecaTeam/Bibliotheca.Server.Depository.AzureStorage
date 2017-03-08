@@ -235,13 +235,29 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
         public async Task DeleteFolderAsync(string projectId, string branchName, string path)
         {
             CloudBlobContainer container = GetContainerReference(projectId);
-
             var folderPath = Path.Combine(branchName, path);
-            CloudBlockBlob branchFolder = container.GetBlockBlobReference(folderPath);
-            if (branchFolder != null)
+
+            BlobContinuationToken continuationToken = null;
+            BlobResultSegment resultSegment = null;
+            do
             {
-                await branchFolder.DeleteIfExistsAsync();
+                resultSegment = await container.ListBlobsSegmentedAsync(folderPath, true, BlobListingDetails.Metadata, 10, continuationToken, null, null);
+                foreach (var blobItem in resultSegment.Results)
+                {
+                    var blob = blobItem as CloudBlockBlob;
+                    if(blob != null)
+                    {
+                        var blobReference = container.GetBlockBlobReference(blob.Name);
+                        if(blobReference != null)
+                        {
+                            await blobReference.DeleteIfExistsAsync();
+                        }
+                    }
+                }
+
+                continuationToken = resultSegment.ContinuationToken;
             }
+            while (continuationToken != null);
         }
 
         private CloudBlobContainer GetContainerReference(string containerName)
