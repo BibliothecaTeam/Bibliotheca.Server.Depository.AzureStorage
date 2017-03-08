@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bibliotheca.Server.Depository.Abstractions.Exceptions;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Parameters;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -15,9 +16,12 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
     {
         private readonly ApplicationParameters _applicationParameters;
 
-        public AzureStorageService(IOptions<ApplicationParameters> applicationParameters)
+        private readonly ILogger<AzureStorageService> _logger;
+
+        public AzureStorageService(IOptions<ApplicationParameters> applicationParameters, ILogger<AzureStorageService> logger)
         {
             _applicationParameters = applicationParameters.Value;
+            _logger = logger;
         }
 
         public async Task<IList<string>> GetProjectsIdsAsync()
@@ -234,6 +238,8 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 
         public async Task DeleteFolderAsync(string projectId, string branchName, string path)
         {
+            _logger.LogInformation($"Deleting folder: '{path}' from branch: '{branchName}' and project: '{projectId}'.");
+
             CloudBlobContainer container = GetContainerReference(projectId);
             var folderPath = Path.Combine(branchName, path);
 
@@ -244,6 +250,8 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
                 resultSegment = await container.ListBlobsSegmentedAsync(folderPath, true, BlobListingDetails.Metadata, 10, continuationToken, null, null);
                 foreach (var blobItem in resultSegment.Results)
                 {
+                    _logger.LogInformation($"Deleting '{blobItem.StorageUri.PrimaryUri}' file...");
+
                     var blob = blobItem as CloudBlockBlob;
                     if(blob != null)
                     {
@@ -251,13 +259,24 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
                         if(blobReference != null)
                         {
                             await blobReference.DeleteIfExistsAsync();
+                            _logger.LogInformation($"File '{blobItem.StorageUri.PrimaryUri}' deleted.");
                         }
+                        else
+                        {
+                            _logger.LogWarning($"There is an issue with deleting '{blobItem.StorageUri.PrimaryUri}' file. Blobk blob refenrece not exists.");
+                        }
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"There is an issue with deleting '{blobItem.StorageUri.PrimaryUri}' file. Blob is not a cloud block blob.");
                     }
                 }
 
                 continuationToken = resultSegment.ContinuationToken;
             }
             while (continuationToken != null);
+
+            _logger.LogInformation($"Deleting process finished.");
         }
 
         private CloudBlobContainer GetContainerReference(string containerName)
