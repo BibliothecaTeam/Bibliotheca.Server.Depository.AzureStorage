@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Bibliotheca.Server.Depository.Abstractions;
-using Bibliotheca.Server.Depository.Abstractions.DataTransferObjects;
+using Bibliotheca.Server.Depository.AzureStorage.Core.DataTransferObjects;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +10,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api.Controllers
     [Authorize]
     [ApiVersion("1.0")]
     [Route("api/projects/{projectId}/branches")]
-    public class BranchesController : Controller, IBranchesController
+    public class BranchesController : Controller
     {
         private readonly IBranchesService _branchesService;
 

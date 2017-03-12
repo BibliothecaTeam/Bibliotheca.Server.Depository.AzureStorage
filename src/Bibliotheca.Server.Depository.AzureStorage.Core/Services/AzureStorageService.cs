@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Bibliotheca.Server.Depository.Abstractions.Exceptions;
+using Bibliotheca.Server.Depository.AzureStorage.Core.Exceptions;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Parameters;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

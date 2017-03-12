@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>portable</DebugType>
+    <AssemblyName>Bibliotheca.Server.Depository.AzureStorage.Core</AssemblyName>
+    <PackageId>Bibliotheca.Server.Depository.AzureStorage.Core</PackageId>
+    <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;dnxcore50;portable-net45+win8</PackageTargetFallback>
+    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WindowsAzure.Storage" Version="8.1.1" />
+    <PackageReference Include="YamlDotNet" Version="4.0.0" />
+    <PackageReference Include="Bibliotheca.Server.Mvc.Middleware.Diagnostics" Version="1.0.4" />
+  </ItemGroup>
+
+</Project>

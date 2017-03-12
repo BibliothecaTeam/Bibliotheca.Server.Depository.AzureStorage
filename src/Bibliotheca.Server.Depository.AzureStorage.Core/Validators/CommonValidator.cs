@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Bibliotheca.Server.Depository.Abstractions.Exceptions;
+using Bibliotheca.Server.Depository.AzureStorage.Core.Exceptions;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Services;
 
 namespace Bibliotheca.Server.Depository.AzureStorage.Core.Validators

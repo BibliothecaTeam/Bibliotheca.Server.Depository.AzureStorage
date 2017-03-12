@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Bibliotheca.Server.Depository.Abstractions.DataTransferObjects;
+using Bibliotheca.Server.Depository.AzureStorage.Core.DataTransferObjects;
 
 namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 {
