@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Exceptions;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Parameters;
@@ -121,7 +122,9 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
                     var url = blobItem.StorageUri.PrimaryUri.Segments.Last();
                     if (url.EndsWith("/"))
                     {
-                        blobs.Add(url.Trim('/'));
+                        var folderName = url.Trim('/');
+                        folderName = WebUtility.UrlDecode(folderName);
+                        blobs.Add(folderName);
                     }
                 }
 
