@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="WindowsAzure.Storage" Version="8.1.1" />
     <PackageReference Include="YamlDotNet" Version="4.0.0" />
-    <PackageReference Include="Bibliotheca.Server.Mvc.Middleware.Diagnostics" Version="1.0.4" />
+    <PackageReference Include="Bibliotheca.Server.Mvc.Middleware.Diagnostics" Version="1.0.5" />
   </ItemGroup>
 
 </Project>

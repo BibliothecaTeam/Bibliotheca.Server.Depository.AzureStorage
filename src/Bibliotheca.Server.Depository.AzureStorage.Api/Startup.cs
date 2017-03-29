@@ -1,8 +1,12 @@
+using Bibliotheca.Server.Authorization.Heimdall.Api.UserTokenAuthorization;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Parameters;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Services;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Validators;
 using Bibliotheca.Server.Depository.AzureStorage.Jobs;
 using Bibliotheca.Server.Mvc.Middleware.Authorization;
+using Bibliotheca.Server.Mvc.Middleware.Authorization.BearerAuthentication;
+using Bibliotheca.Server.Mvc.Middleware.Authorization.SecureTokenAuthentication;
+using Bibliotheca.Server.Mvc.Middleware.Authorization.UserTokenAuthentication;
 using Bibliotheca.Server.Mvc.Middleware.Diagnostics.Exceptions;
 using Bibliotheca.Server.ServiceDiscovery.ServiceClient.Extensions;
 using Hangfire;
@@ -87,6 +91,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
             services.AddServiceDiscovery();
 
             services.AddScoped<IServiceDiscoveryRegistrationJob, ServiceDiscoveryRegistrationJob>();
+            services.AddScoped<IUserTokenConfiguration, UserTokenConfiguration>();
 
             services.AddScoped<IAzureStorageService, AzureStorageService>();
             services.AddScoped<ICommonValidator, CommonValidator>(); ;
@@ -124,6 +129,13 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
                 Realm = SecureTokenDefaults.Realm
             };
             app.UseSecureTokenAuthentication(secureTokenOptions);
+
+            var userTokenOptions = new UserTokenOptions
+            {
+                AuthenticationScheme = UserTokenDefaults.AuthenticationScheme,
+                Realm = UserTokenDefaults.Realm
+            };
+            app.UseUserTokenAuthentication(userTokenOptions);
 
             var jwtBearerOptions = new JwtBearerOptions
             {
