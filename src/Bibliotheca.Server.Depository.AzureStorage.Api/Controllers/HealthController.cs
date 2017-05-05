@@ -21,7 +21,8 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api.Controllers
         [ProducesResponseType(200, Type = typeof(string))]
         public string Get()
         {
-            return "I'm alive and reachable";
+            var version = Microsoft.Extensions.PlatformAbstractions.PlatformServices.Default.Application.ApplicationVersion;
+            return $"[AzureStorage: {version}] I'm alive and reachable";
         }
     }
 }
