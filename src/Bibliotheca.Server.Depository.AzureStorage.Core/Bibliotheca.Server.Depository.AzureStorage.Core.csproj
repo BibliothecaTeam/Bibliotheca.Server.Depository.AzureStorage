@@ -1,6 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <VersionPrefix>1.2.0</VersionPrefix>
     <TargetFramework>netstandard1.6</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>portable</DebugType>
@@ -12,8 +13,12 @@
 
   <ItemGroup>
     <PackageReference Include="WindowsAzure.Storage" Version="8.1.1" />
-    <PackageReference Include="YamlDotNet" Version="4.0.0" />
-    <PackageReference Include="Bibliotheca.Server.Mvc.Middleware.Diagnostics" Version="1.0.5" />
+    <PackageReference Include="YamlDotNet" Version="4.1.0" />
+    <PackageReference Include="Bibliotheca.Server.Mvc.Middleware.Diagnostics" Version="1.0.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <DotNetCliToolReference Include="libyear" Version="*" />
+  </ItemGroup>
+  
 </Project>
