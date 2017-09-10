@@ -7,7 +7,7 @@
         {
             "taskName": "build",
             "args": [
-                "${workspaceRoot}/src/Bibliotheca.Server.Depository.AzureStorage.Api/project.json"
+                "${workspaceRoot}/src/Bibliotheca.Server.Depository.AzureStorage.Api/Bibliotheca.Server.Depository.AzureStorage.Api.csproj"
             ],
             "isBuildCommand": true,
             "problemMatcher": "$msCompile"
