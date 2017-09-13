@@ -72,14 +72,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
                 });
             });
 
-            services.AddMvc(config =>
-            {
-                var policy = new AuthorizationPolicyBuilder(
-                    new[] { SecureTokenSchema.Name, UserTokenSchema.Name, JwtBearerDefaults.AuthenticationScheme })
-                    .RequireAuthenticatedUser()
-                    .Build();
-                config.Filters.Add(new AuthorizeFilter(policy));
-            }).AddJsonOptions(options =>
+            services.AddMvc().AddJsonOptions(options =>
             {
                 options.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
             });
