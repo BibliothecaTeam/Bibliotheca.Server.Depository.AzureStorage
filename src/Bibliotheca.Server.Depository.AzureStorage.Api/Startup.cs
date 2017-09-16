@@ -124,6 +124,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api
             services.AddScoped<IProjectsService, ProjectsService>();
             services.AddScoped<IBranchesService, BranchesService>();
             services.AddScoped<IDocumentsService, DocumentsService>();
+            services.AddScoped<IGroupsService, GroupsService>();
         }
 
         /// <summary>
