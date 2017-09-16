@@ -27,7 +27,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
         {
             CloudBlockBlob fileBlob = GetFileBlob();
             var groups = await ReadGroupsAsync(fileBlob);
-            return groups;
+            return groups.OrderBy(x => x.Name).ToList();
         }
 
         public async Task<GroupDto> GetGroupAsync(string groupName)
