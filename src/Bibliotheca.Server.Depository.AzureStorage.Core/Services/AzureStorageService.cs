@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,8 +39,11 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
                 resultSegment = await blobClient.ListContainersSegmentedAsync(continuationToken);
                 foreach (var blobItem in resultSegment.Results)
                 {
-                    var url = blobItem.StorageUri.PrimaryUri.Segments.Last();
-                    containers.Add(url);
+                    var containerName = blobItem.StorageUri.PrimaryUri.Segments.Last();
+                    if(!containerName.Equals(GroupsService.SettingsContainerName, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        containers.Add(containerName);
+                    }
                 }
 
                 continuationToken = resultSegment.ContinuationToken;

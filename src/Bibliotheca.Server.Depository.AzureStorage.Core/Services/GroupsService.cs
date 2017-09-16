@@ -15,7 +15,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
     {
         private readonly ApplicationParameters _applicationParameters;
 
-        private const string SettingsContainerName = "bibliotheca-settings";
+        public const string SettingsContainerName = "bibliotheca-settings";
         private const string GroupFileName = "groups.json";
 
         public GroupsService(IOptions<ApplicationParameters> applicationParameters)
