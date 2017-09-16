@@ -27,7 +27,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
         {
             CloudBlockBlob fileBlob = GetFileBlob();
             var groups = await ReadGroupsAsync(fileBlob);
-            return groups.OrderBy(x => x.Name).ToList();
+            return groups;
         }
 
         public async Task<GroupDto> GetGroupAsync(string groupName)
@@ -104,7 +104,8 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 
         private async Task UploadGroupsAsync(CloudBlockBlob fileBlob, List<GroupDto> groups)
         {
-            var serializedGroups = JsonConvert.SerializeObject(groups);
+            var sortedGroups = groups.OrderBy(x => x.Name);
+            var serializedGroups = JsonConvert.SerializeObject(sortedGroups);
             await fileBlob.UploadTextAsync(serializedGroups);
         }
 
