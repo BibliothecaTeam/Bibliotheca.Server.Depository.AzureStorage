@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bibliotheca.Server.Depository.AzureStorage.Core.DataTransferObjects;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Services;
+using Bibliotheca.Server.Mvc.Middleware.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +11,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api.Controllers
     /// <summary>
     /// Controller which manages projects infrmation.
     /// </summary>
-    [Authorize]
+    [UserAuthorize]
     [ApiVersion("1.0")]
     [Route("api/projects")]
     public class ProjectsController : Controller
