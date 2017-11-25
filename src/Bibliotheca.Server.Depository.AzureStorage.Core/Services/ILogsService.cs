@@ -1,11 +1,12 @@
 using System.Threading.Tasks;
+using Bibliotheca.Server.Depository.AzureStorage.Core.DataTransferObjects;
 
 namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 {
     public interface ILogsService
     {
-        Task<string> GetLogsAsync(string projectId);
+        Task<LogsDto> GetLogsAsync(string projectId);
 
-        Task AppendLogsAsync(string projectId, string logs);
+        Task AppendLogsAsync(string projectId, LogsDto logs);
     }
 }

@@ -30,10 +30,11 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api.Controllers
         /// <remarks>
         /// Endpoint returns logs messages associated with specific project.
         /// </remarks>
+        /// <param name="projectId">Project id.</param>
         /// <returns>Logs dor specific project.</returns>
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(string))]
-        public async Task<string> Get(string projectId)
+        [ProducesResponseType(200, Type = typeof(LogsDto))]
+        public async Task<LogsDto> Get(string projectId)
         {
             return await _logsService.GetLogsAsync(projectId);
         }
@@ -44,11 +45,13 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api.Controllers
         /// <remarks>
         /// Endpoint appends logs messages associated with specific project.
         /// </remarks>
+        /// <param name="projectId">Project id.</param>
+        /// <param name="logsDto">Message.</param>
         [HttpPut]
-        [ProducesResponseType(200, Type = typeof(string))]
+        [ProducesResponseType(200)]
         public async Task Put(string projectId, [FromBody] LogsDto logsDto)
         {
-            await _logsService.AppendLogsAsync(projectId, logsDto.Message);
+            await _logsService.AppendLogsAsync(projectId, logsDto);
         }
     }
 }
