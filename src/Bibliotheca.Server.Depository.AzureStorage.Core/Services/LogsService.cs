@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Bibliotheca.Server.Depository.AzureStorage.Core.DataTransferObjects;
 
 namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 {
@@ -11,15 +12,15 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
             _azureStorageService = azureStorageService;
         }
 
-        public async Task<string> GetLogsAsync(string projectId)
+        public async Task<LogsDto> GetLogsAsync(string projectId)
         {
             var logs = await _azureStorageService.ReadTextAsync(projectId, "logs.txt");
-            return logs;
+            return new LogsDto { Message = logs };
         }
 
-        public async Task AppendLogsAsync(string projectId, string logs)
+        public async Task AppendLogsAsync(string projectId, LogsDto logs)
         {
-            await _azureStorageService.WriteTextAsync(projectId, "logs.txt", logs);
+            await _azureStorageService.WriteTextAsync(projectId, "logs.txt", logs.Message);
         }
     }
 }
