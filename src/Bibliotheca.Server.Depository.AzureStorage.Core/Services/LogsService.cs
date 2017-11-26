@@ -1,5 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using Bibliotheca.Server.Depository.AzureStorage.Core.DataTransferObjects;
+using Bibliotheca.Server.Depository.AzureStorage.Core.Exceptions;
 
 namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 {
@@ -14,7 +16,19 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 
         public async Task<LogsDto> GetLogsAsync(string projectId)
         {
-            var logs = await _azureStorageService.ReadTextAsync(projectId, "logs.txt");
+            var logs = string.Empty;
+            try
+            {
+                logs = await _azureStorageService.ReadTextAsync(projectId, "logs.txt");
+            }
+            catch(DocumentNotFoundException) 
+            { 
+            }
+            catch(Exception exception) 
+            {
+                throw exception;
+            }
+
             return new LogsDto { Message = logs };
         }
 
