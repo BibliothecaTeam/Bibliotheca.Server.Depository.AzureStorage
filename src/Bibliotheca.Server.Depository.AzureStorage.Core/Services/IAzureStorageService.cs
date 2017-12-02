@@ -38,5 +38,9 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
         Task WriteTextAsync(string projectId, string branchName, string fileUri, string contents);
 
         Task WriteBinaryAsync(string projectId, string branchName, string fileUri, byte[] contents);
+
+        Task AppendTextAsync(string projectId, string fileUri, string contents);
+
+        Task AppendTextAsync(string projectId, string branchName, string fileUri, string contents);
     }
 }

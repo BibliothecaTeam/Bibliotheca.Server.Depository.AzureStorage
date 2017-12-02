@@ -34,7 +34,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 
         public async Task AppendLogsAsync(string projectId, LogsDto logs)
         {
-            await _azureStorageService.WriteTextAsync(projectId, "logs.txt", logs.Message);
+            await _azureStorageService.AppendTextAsync(projectId, "logs.txt", logs.Message);
         }
     }
 }
