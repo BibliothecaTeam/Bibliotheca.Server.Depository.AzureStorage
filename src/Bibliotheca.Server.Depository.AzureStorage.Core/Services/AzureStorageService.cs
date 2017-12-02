@@ -162,6 +162,28 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
             return text;
         }
 
+        public async Task<string> ReadAppendTextAsync(string projectId, string fileUri)
+        {
+            return await ReadAppendTextAsync(projectId, string.Empty, fileUri);
+        }
+
+        public async Task<string> ReadAppendTextAsync(string projectId, string branchName, string fileUri)
+        {
+            CloudBlobContainer container = GetContainerReference(projectId);
+
+            var path = Path.Combine(branchName, fileUri);
+            var blockBlob = container.GetAppendBlobReference(path);
+
+            bool exists = await blockBlob.ExistsAsync();
+            if(!exists)
+            {
+                throw new DocumentNotFoundException($"File '{path}' not found.");
+            }
+
+            string text = await blockBlob.DownloadTextAsync();
+            return text;
+        }
+
         public async Task<byte[]> ReadBinaryAsync(string projectId, string branchName, string fileUri)
         {
             CloudBlobContainer container = GetContainerReference(projectId);

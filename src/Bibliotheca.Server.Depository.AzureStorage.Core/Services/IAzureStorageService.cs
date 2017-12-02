@@ -31,6 +31,10 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 
         Task<string> ReadTextAsync(string projectId, string branchName, string fileUri);
 
+        Task<string> ReadAppendTextAsync(string projectId, string fileUri);
+
+        Task<string> ReadAppendTextAsync(string projectId, string branchName, string fileUri);
+
         Task<byte[]> ReadBinaryAsync(string projectId, string branchName, string fileUri);
 
         Task WriteTextAsync(string projectId, string fileUri, string contents);
