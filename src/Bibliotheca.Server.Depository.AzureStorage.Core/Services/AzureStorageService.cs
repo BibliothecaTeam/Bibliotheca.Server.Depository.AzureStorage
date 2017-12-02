@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Exceptions;
 using Bibliotheca.Server.Depository.AzureStorage.Core.Parameters;
@@ -208,8 +209,16 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
             CloudBlobContainer container = blobClient.GetContainerReference(projectId);
 
             var path = Path.Combine(branchName, fileUri);
-            CloudAppendBlob blockBlob = container.GetAppendBlobReference(path);
-            await blockBlob.AppendTextAsync(contents);
+            var blockBlob = container.GetAppendBlobReference(path);
+            if (!await blockBlob.ExistsAsync())
+            {
+                await blockBlob.CreateOrReplaceAsync();
+            }
+
+            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(contents)))
+            {
+                await blockBlob.AppendBlockAsync(stream);
+            }
         }
 
         public async Task WriteBinaryAsync(string projectId, string branchName, string fileUri, byte[] contents)
