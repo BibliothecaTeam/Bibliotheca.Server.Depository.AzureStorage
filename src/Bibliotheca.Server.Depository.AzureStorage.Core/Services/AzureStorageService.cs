@@ -196,6 +196,22 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
             await blockBlob.UploadTextAsync(contents);
         }
 
+        public async Task AppendTextAsync(string projectId, string fileUri, string contents)
+        {
+            await AppendTextAsync(projectId, string.Empty, fileUri, contents);
+        }
+
+        public async Task AppendTextAsync(string projectId, string branchName, string fileUri, string contents)
+        {
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(_applicationParameters.AzureStorageConnectionString);
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+            CloudBlobContainer container = blobClient.GetContainerReference(projectId);
+
+            var path = Path.Combine(branchName, fileUri);
+            CloudAppendBlob blockBlob = container.GetAppendBlobReference(path);
+            await blockBlob.AppendTextAsync(contents);
+        }
+
         public async Task WriteBinaryAsync(string projectId, string branchName, string fileUri, byte[] contents)
         {
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(_applicationParameters.AzureStorageConnectionString);
