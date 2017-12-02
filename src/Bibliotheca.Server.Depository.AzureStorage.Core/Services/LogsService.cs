@@ -19,7 +19,7 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
             var logs = string.Empty;
             try
             {
-                logs = await _azureStorageService.ReadTextAsync(projectId, "logs.txt");
+                logs = await _azureStorageService.ReadAppendTextAsync(projectId, "logs.txt");
             }
             catch(DocumentNotFoundException) 
             { 
