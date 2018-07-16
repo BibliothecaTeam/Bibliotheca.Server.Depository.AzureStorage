@@ -11,6 +11,8 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
 
         Task<bool> IsFileExistsAsync(string projectId, string branchName, string fileUri);
 
+        Task DeleteFileAsync(string projectId, string fileUri);
+
         Task DeleteFileAsync(string projectId, string branchName, string fileUri);
 
         Task<IList<string>> GetFilesAsync(string projectId, string branchName);
