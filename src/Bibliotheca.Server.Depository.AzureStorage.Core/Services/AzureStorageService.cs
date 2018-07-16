@@ -70,6 +70,11 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
             return exists;
         }
 
+        public async Task DeleteFileAsync(string projectId, string fileUri)
+        {
+            await DeleteFileAsync(projectId, string.Empty, fileUri);
+        }
+
         public async Task DeleteFileAsync(string projectId, string branchName, string fileUri)
         {
             CloudBlobContainer container = GetContainerReference(projectId);

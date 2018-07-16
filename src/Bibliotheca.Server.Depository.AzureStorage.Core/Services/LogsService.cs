@@ -36,5 +36,10 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Core.Services
         {
             await _azureStorageService.AppendTextAsync(projectId, "logs.txt", logs.Message);
         }
+
+        public async Task DeleteLogsAsync(string projectId)
+        {
+            await _azureStorageService.DeleteFileAsync(projectId, "logs.txt");
+        }
     }
 }

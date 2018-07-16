@@ -53,5 +53,19 @@ namespace Bibliotheca.Server.Depository.AzureStorage.Api.Controllers
         {
             await _logsService.AppendLogsAsync(projectId, logsDto);
         }
+
+        /// <summary>
+        /// Delete logs from project.
+        /// </summary>
+        /// <remarks>
+        /// Endpoint delete logs messages associated to specific project.
+        /// </remarks>
+        /// <param name="projectId">Project id.</param>
+        [HttpDelete]
+        [ProducesResponseType(200)]
+        public async Task Delete(string projectId)
+        {
+            await _logsService.DeleteLogsAsync(projectId);
+        }
     }
 }
